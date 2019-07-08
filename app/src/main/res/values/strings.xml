@@ -1,0 +1,75 @@
+<resources>
+    <string name="app_name">Smart Sleep</string>
+    <string name="action_settings">Settings</string>
+    <string name="splash">splash</string>
+    <string name="welcome_title">SmartSleep</string>
+    <string name="welcome_subtitle">EKSPERIMENTET</string>
+    <string name="welcome_prerequisite">Læs mere om smartsleep\nundersøgelsen på\nsmartsleep.ku.dk</string>
+    <string name="welcome_footer">Sover du godt nok?</string>
+
+    <string name="attendee_number_title">Start</string>
+    <string name="attendee_number_intro">Du skal have et deltagernummer
+        \nfor at kunne bruge app’en. Du
+        \nfår et deltagernummer, hvis du
+        \nbliver inviteret til undersøgelsen.</string>
+    <string name="attendee_number_label">DELTAGER NUMMER</string>
+    <string name="attendee_number_error">UGYLDIGT DELTAGER NUMMER</string>
+
+    <string name="email_title">Start</string>
+    <string name="email_intro">Vi deler ikke din e-mailadresse med andre og
+        \nvi sender dig kun information, der er
+        \nrelevant for undersøgelsen.</string>
+    <string name="email_label">EMAIL ADRESSE</string>
+    <string name="email_error">UGYLDIG EMAIL ADRESSE</string>
+
+    <string name="password_title">Start</string>
+    <string name="password_intro">Angiv et sikkert kodeord</string>
+    <string name="password_label">KODEORD</string>
+    <string name="password_error">KODEORDET MÅ IKKE VÆRE TOMT</string>
+
+    <string name="request_access_title">Start</string>
+    <string name="request_access_intro">Vi beskytter alle
+        informationer om dit privatliv.\n
+        \nVi beder om adgang til dine skærmaktivitetsdata,
+        lokation og afledte data om bevægelser. Disse data
+        er vigtige for at kunne indsamle informationer om,
+        hvor meget du har sovet og hvor meget du har bevæget
+        dig.\n
+        \nAlle personfølsomme informationer bliver gemt separat
+        fra andet data indsamlet på din telefon.</string>
+    <string name="request_access_button">OK</string>
+    <string name="request_access_lock">Privacy</string>
+
+    <string name="menu_questionnaire">Spørgeskema</string>
+    <string name="menu_calendar">Historik</string>
+    <string name="menu_advice">Søvn råd</string>
+
+    <string name="tonight_title">Din søvn</string>
+    <string name="tonight_subtitle">I nat</string>
+    <string name="tonight_longest_rest">0:00 skærmfri</string>
+    <string name="tonight_disruptions">0 skærmaktiveringer</string>
+    <string name="tonight_unrest">0 skærmtid</string>
+    <string name="tonight_longest_rest_suffix">%d:%02d længste skærmfri</string>
+    <string name="tonight_disruptions_suffix">%d skærmaktiveringer</string>
+    <string name="tonight_unrest_suffix">%d:%02d skærmtid</string>
+
+    <string name="evening">Sengetid</string>
+    <string name="morning">Morgen</string>
+
+    <string name="configure_title">Hvornår sover du?</string>
+    <string name="configure_weekdays">hverdage</string>
+    <string name="configure_weekends">weekender</string>
+
+    <string name="ok">OK</string>
+
+    <string name="help_title">Hvordan måles søvnrytmer?</string>
+
+    <string name="history_title">Historik</string>
+
+
+    <string name="line_disruption_count">aktiveringer\nnaf skærm</string>
+    <string name="line_sleep_duration">længste\nnsøvn</string>
+    <string name="line_unrest_duration">minutters\nskærmtid</string>
+    <string name="line_title_value">%s, %s-%s</string>
+    <string name="line_sleep_duration_value">%d:%02d</string>
+</resources>

@@ -1,0 +1,72 @@
+package dk.ku.sund.smartsleep
+
+import android.app.Activity
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.TextView
+import dk.ku.sund.smartsleep.manager.fetchNights
+import kotlinx.android.synthetic.main.activity_history.*
+import java.text.SimpleDateFormat
+import java.util.*
+
+class HistoryActivity : Activity() {
+
+    private data class ViewHolder(
+        var title: TextView,
+        var disruptionCount: TextView,
+        var sleepDuration: TextView,
+        var unrestDuration: TextView
+    )
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_history)
+
+        val inflater = LayoutInflater.from(this)
+        val nights = fetchNights()
+        val locale = Locale("da_DK")
+        val dateFormatter = SimpleDateFormat("d. MMMM", locale)
+        val timeFormatter = SimpleDateFormat("hh:mm", locale)
+
+        list.adapter = object : ArrayAdapter<String>(this, list.id) {
+            override fun getCount(): Int {
+                return nights.count()
+            }
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val holder: ViewHolder
+                var line = convertView
+                if (line == null) {
+                    line = inflater.inflate(R.layout.line_night, parent)
+                    holder = ViewHolder(
+                        line.findViewById(R.id.line_title),
+                        line.findViewById(R.id.line_disruption_count),
+                        line.findViewById(R.id.line_sleep_duration),
+                        line.findViewById(R.id.line_unrest_duration)
+                    )
+                    line.setTag(holder)
+                } else {
+                    holder = line.tag as ViewHolder
+                }
+
+                val night = nights[position]
+                holder.title.text = getString(R.string.line_title_value,
+                    dateFormatter.format(night.from),
+                    timeFormatter.format(night.from),
+                    timeFormatter.format(night.to)
+                )
+                holder.disruptionCount.text = "${night.disruptionCount}"
+                holder.sleepDuration.text = getString(R.string.line_sleep_duration_value,
+                    night.longestSleepDuration?.div(3600),
+                    night.longestSleepDuration?.div(60)
+                )
+                holder.unrestDuration.text = "${night.unrestDuration?.div(60)}"
+
+                return line!!
+            }
+        }
+    }
+}
+
