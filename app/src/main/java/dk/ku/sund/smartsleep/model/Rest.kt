@@ -25,8 +25,8 @@ data class Rest(
     constructor(cursor: Cursor): this(null, null, null, null) {
         id = cursor.getString(cursor.getColumnIndex("id"))
         resting = cursor.getInt(cursor.getColumnIndex("resting")) != 0
-        startTime = Date(cursor.getLong(cursor.getColumnIndex("startTime")))
-        endTime = Date(cursor.getLong(cursor.getColumnIndex("endTime")))
+        startTime = Date(cursor.getLong(cursor.getColumnIndex("startTime")) * 1000)
+        endTime = Date(cursor.getLong(cursor.getColumnIndex("endTime")) * 1000)
     }
 
     fun save() {
@@ -34,6 +34,6 @@ data class Rest(
         val insertStatementString = "insert or replace into rests (id, resting, startTime, endTime) values (?, ?, ?, ?)"
         var resting = 0
         if (this.resting!!) resting = 1
-        db?.execSQL(insertStatementString, arrayOf("'${id}'", resting, startTime!!.time, endTime?.time))
+        db?.execSQL(insertStatementString, arrayOf("'${id}'", resting, startTime!!.time / 1000, endTime?.time?.div(1000)))
     }
 }

@@ -28,8 +28,8 @@ data class Night(
 
     constructor(cursor: Cursor): this(null, null, null, null, null, null) {
         id = cursor.getInt(cursor.getColumnIndex("id"))
-        from = Date(cursor.getLong(cursor.getColumnIndex("from")))
-        to = Date(cursor.getLong(cursor.getColumnIndex("to")))
+        from = Date(cursor.getLong(cursor.getColumnIndex("from")) * 1000)
+        to = Date(cursor.getLong(cursor.getColumnIndex("to")) * 1000)
         disruptionCount = cursor.getInt(cursor.getColumnIndex("disruptionCount"))
         longestSleepDuration = cursor.getLong(cursor.getColumnIndex("longestSleepDuration"))
         unrestDuration = cursor.getLong(cursor.getColumnIndex("unrestDuration"))
@@ -40,12 +40,12 @@ data class Night(
             val insertStatementString = "insert or replace into nights (\"from\", \"to\", disruptionCount, " +
                     "longestSleepDuration, unrestDuration) " +
                     "values (?, ?, ?, ?, ?)"
-            db?.execSQL(insertStatementString, arrayOf(from, to, disruptionCount, longestSleepDuration, unrestDuration))
+            db?.execSQL(insertStatementString, arrayOf(from!!.time / 1000, to!!.time / 1000, disruptionCount, longestSleepDuration, unrestDuration))
         } else {
             val updateStatementString = "update nights set (\"from\" = ?, \"to\" = ?, disruptionCount = ?, " +
                     "longestSleepDuration = ?, unrestDuration = ?) " +
                     "where id = ?"
-            db?.execSQL(updateStatementString, arrayOf(from, to, disruptionCount, longestSleepDuration, unrestDuration, id))
+            db?.execSQL(updateStatementString, arrayOf(from!!.time / 1000, to!!.time / 1000, disruptionCount, longestSleepDuration, unrestDuration, id))
         }
     }
 

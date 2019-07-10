@@ -22,7 +22,7 @@ data class Sleep (
 
     constructor(cursor: Cursor): this(null, null, null) {
         id = cursor.getInt(cursor.getColumnIndex("id"))
-        time = Date(cursor.getLong(cursor.getColumnIndex("time")))
+        time = Date(cursor.getLong(cursor.getColumnIndex("time")) * 1000)
         sleeping = cursor.getInt(cursor.getColumnIndex("sleeping")) != 0
     }
 
@@ -30,11 +30,11 @@ data class Sleep (
         if (id == null) {
             val insertStatementString = "insert or replace into sleeps (\"time\", sleeping) " +
                     "values (?, ?)"
-            db?.execSQL(insertStatementString, arrayOf((time ?: Date()).time, sleeping))
+            db?.execSQL(insertStatementString, arrayOf((time ?: Date()).time / 1000, sleeping))
         } else {
             val updateStatementString = "update sleeps set (\"time\" = ?, sleeping = ?) " +
                     "where id = ?"
-            db?.execSQL(updateStatementString, arrayOf(time, sleeping, id))
+            db?.execSQL(updateStatementString, arrayOf(time?.time?.div(1000), sleeping, id))
         }
     }
 }
