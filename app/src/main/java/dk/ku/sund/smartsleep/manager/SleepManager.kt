@@ -40,7 +40,7 @@ fun bulkPostSleep() = runBlocking {
             "Content-Type" to "application/json",
             "Authorization" to "Bearer ${jwt}"
         ))
-        .jsonBody(sleeps)
+        .body(gson.toJson(sleeps))
         .awaitStringResult()
     if (result.component2() != null) {
         Log.e("SleepManager", "Failed posting sleeps: ${result.component2().toString()}")
