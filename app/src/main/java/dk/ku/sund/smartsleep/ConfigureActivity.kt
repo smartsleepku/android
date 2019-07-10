@@ -4,13 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.format.DateFormat
-import dk.ku.sund.smartsleep.manager.configuration
-import dk.ku.sund.smartsleep.manager.currentConfiguration
-import dk.ku.sund.smartsleep.manager.defaultConfiguration
-import dk.ku.sund.smartsleep.manager.hasConfiguration
 import kotlinx.android.synthetic.main.activity_configure.*
 import kotlinx.android.synthetic.main.content_configure.*
 import android.app.TimePickerDialog
+import dk.ku.sund.smartsleep.manager.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.*
 
 
@@ -33,7 +32,7 @@ class ConfigureActivity : Activity() {
             val cal = Calendar.getInstance()
             cal.time = config.weekdayEvening
             TimePickerDialog(this,
-                TimePickerDialog.OnTimeSetListener(function = { view, hour, minute ->
+                TimePickerDialog.OnTimeSetListener(function = { _, hour, minute ->
                     cal.set(Calendar.HOUR_OF_DAY, hour)
                     cal.set(Calendar.MINUTE, minute)
                     config.weekdayEvening = cal.time
@@ -51,7 +50,7 @@ class ConfigureActivity : Activity() {
             val cal = Calendar.getInstance()
             cal.time = config.weekdayMorning
             TimePickerDialog(this,
-                TimePickerDialog.OnTimeSetListener(function = { view, hour, minute ->
+                TimePickerDialog.OnTimeSetListener(function = { _, hour, minute ->
                     cal.set(Calendar.HOUR_OF_DAY, hour)
                     cal.set(Calendar.MINUTE, minute)
                     config.weekdayMorning = cal.time
@@ -69,7 +68,7 @@ class ConfigureActivity : Activity() {
             val cal = Calendar.getInstance()
             cal.time = config.weekendEvening
             TimePickerDialog(this,
-                TimePickerDialog.OnTimeSetListener(function = { view, hour, minute ->
+                TimePickerDialog.OnTimeSetListener(function = { _, hour, minute ->
                     cal.set(Calendar.HOUR_OF_DAY, hour)
                     cal.set(Calendar.MINUTE, minute)
                     config.weekendEvening = cal.time
@@ -87,7 +86,7 @@ class ConfigureActivity : Activity() {
             val cal = Calendar.getInstance()
             cal.time = config.weekendMorning
             TimePickerDialog(this,
-                TimePickerDialog.OnTimeSetListener(function = { view, hour, minute ->
+                TimePickerDialog.OnTimeSetListener(function = { _, hour, minute ->
                     cal.set(Calendar.HOUR_OF_DAY, hour)
                     cal.set(Calendar.MINUTE, minute)
                     config.weekendMorning = cal.time
@@ -116,5 +115,9 @@ class ConfigureActivity : Activity() {
         super.onPause()
 
         if (!hasConfiguration) configuration = defaultConfiguration
+
+        GlobalScope.launch {
+            postAttendee()
+        }
     }
 }
