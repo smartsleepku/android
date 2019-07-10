@@ -52,7 +52,7 @@ class TabActivity : Activity() {
             GlobalScope.launch {
                 generateNights()
                 var night = fetchOneNight(Date())
-                if (night == null) {
+                if (night == null || (night.longestSleepDuration!! + night.unrestDuration!! == 0L)) {
                     val cal = Calendar.getInstance()
                     cal.add(Calendar.DATE, -1)
                     night = fetchOneNight(cal.time)
