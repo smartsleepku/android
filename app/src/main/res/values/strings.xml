@@ -67,8 +67,8 @@
     <string name="history_title">Historik</string>
 
 
-    <string name="line_disruption_count">aktiveringer\nnaf skærm</string>
-    <string name="line_sleep_duration">længste\nnsøvn</string>
+    <string name="line_disruption_count">aktiveringer\naf skærm</string>
+    <string name="line_sleep_duration">længste\nskærmfri</string>
     <string name="line_unrest_duration">minutters\nskærmtid</string>
     <string name="line_title_value">%s, %s-%s</string>
     <string name="line_sleep_duration_value">%d:%02d</string>
