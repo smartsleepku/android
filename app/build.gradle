@@ -8,8 +8,8 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "dk.ku.sund.smartsleep"
-        minSdkVersion 26
-        targetSdkVersion 28
+        minSdkVersion 25
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
