@@ -1,5 +1,6 @@
 package dk.ku.sund.smartsleep.manager
 
+import android.util.Log
 import dk.ku.sund.smartsleep.model.Night
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -38,10 +39,14 @@ fun nightThresholds(date: Date): Pair<Date, Date> {
     cal.time = date
     cal.set(Calendar.HOUR_OF_DAY, eveningHour)
     cal.set(Calendar.MINUTE, eveningMinute)
+    cal.set(Calendar.SECOND, 0)
+    cal.set(Calendar.MILLISECOND, 0)
     val start = cal.time
     cal.time = date
     cal.set(Calendar.HOUR_OF_DAY, morningHour)
     cal.set(Calendar.MINUTE, morningMinute)
+    cal.set(Calendar.SECOND, 0)
+    cal.set(Calendar.MILLISECOND, 0)
     if (cal.time < start) {
         cal.add(Calendar.DATE, 1)
     }
@@ -50,7 +55,7 @@ fun nightThresholds(date: Date): Pair<Date, Date> {
 }
 
 fun fetchNights(): List<Night> {
-    val cursor = db?.rawQuery("select * from nights order by \"from\" asc", emptyArray())
+    val cursor = db?.rawQuery("select * from nights order by \"from\" desc", emptyArray())
     cursor ?: return emptyList()
     val nights = mutableListOf<Night>()
     while (cursor.moveToNext()) {
@@ -73,7 +78,8 @@ fun countNights(): Int {
 }
 
 fun fetchOneNight(date: Date): Night? {
-    val cursor = db?.rawQuery("select * from nights where \"from\" = ?", arrayOf("${date.time}"))
+    val pair = nightThresholds(date)
+    val cursor = db?.rawQuery("select * from nights where \"from\" = ?", arrayOf("${pair.first.time}"))
     cursor ?: return null
     var night: Night? = null
     if(cursor.moveToNext()) {
@@ -101,7 +107,7 @@ fun generateNights() = runBlocking {
         val pair = nightThresholds(now)
         from = pair.first
         to = pair.second
-        print("generating night from ${from} to ${to}...")
+        Log.i("NightManager", "generating night from ${from} to ${to}...")
         cal.time = now
         cal.add(Calendar.DATE, -1)
         now = cal.time
