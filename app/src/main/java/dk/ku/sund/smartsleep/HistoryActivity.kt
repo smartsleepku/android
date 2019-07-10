@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import dk.ku.sund.smartsleep.manager.fetchNights
+import dk.ku.sund.smartsleep.model.Night
 import kotlinx.android.synthetic.main.activity_history.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -39,7 +40,7 @@ class HistoryActivity : Activity() {
                 val holder: ViewHolder
                 var line = convertView
                 if (line == null) {
-                    line = inflater.inflate(R.layout.line_night, parent)
+                    line = inflater.inflate(R.layout.line_night, null)
                     holder = ViewHolder(
                         line.findViewById(R.id.line_title),
                         line.findViewById(R.id.line_disruption_count),
