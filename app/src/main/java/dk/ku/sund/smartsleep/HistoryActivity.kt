@@ -60,8 +60,8 @@ class HistoryActivity : Activity() {
                 )
                 holder.disruptionCount.text = "${night.disruptionCount}"
                 holder.sleepDuration.text = getString(R.string.line_sleep_duration_value,
-                    night.longestSleepDuration?.div(3600),
-                    night.longestSleepDuration?.div(60)
+                    night.longestSleepDuration?.div(3600)?.toInt(),
+                    (night.longestSleepDuration?.div(60))?.rem(60)?.toInt()
                 )
                 holder.unrestDuration.text = "${night.unrestDuration?.div(60)}"
 
