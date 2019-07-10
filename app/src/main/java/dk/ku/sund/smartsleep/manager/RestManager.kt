@@ -40,7 +40,8 @@ fun fetchLongestRest(from: Date, to: Date): Long {
     val queryStatement = "select max(cast((min(endTime,?) - max(startTime,?)) as integer)) " +
             "from rests " +
             "where endTime > ? and startTime < ? " +
-            "and resting = 1"
+            "and resting = 1 " +
+            "and endTime is not null"
     val cursor = db?.rawQuery(queryStatement, arrayOf("${to.time}", "${from.time}", "${from.time}", "${to.time}"))
     if (cursor?.moveToNext() ?: false == false) {
         cursor?.close()
@@ -55,7 +56,8 @@ fun fetchUnrestCount(from: Date, to: Date): Int {
     val queryStatement = "select count(1) " +
             "from rests " +
             "where endTime > ? and startTime < ? " +
-            "and resting = 0"
+            "and resting = 0 " +
+            "and endTime is not null"
     val cursor = db?.rawQuery(queryStatement, arrayOf("${from.time}", "${to.time}"))
     if (cursor?.moveToNext() ?: false == false) {
         cursor?.close()
@@ -70,7 +72,8 @@ fun fetchTotalUnrest(from: Date, to: Date): Long {
     val queryStatement = "select sum(cast((min(endTime,?) - max(startTime,?)) as integer)) " +
             "from rests " +
             "where endTime > ? and startTime < ? " +
-            "and resting = 0"
+            "and resting = 0 " +
+            "and endTime is not null"
     val cursor = db?.rawQuery(queryStatement, arrayOf("${to.time}", "${from.time}", "${from.time}", "${to.time}"))
     if (cursor?.moveToNext() ?: false == false) {
         cursor?.close()
