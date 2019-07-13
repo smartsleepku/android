@@ -30,7 +30,7 @@ class HistoryActivity : Activity() {
         val nights = fetchNights()
         val locale = Locale("da_DK")
         val dateFormatter = SimpleDateFormat("d. MMMM", locale)
-        val timeFormatter = SimpleDateFormat("hh:mm", locale)
+        val timeFormatter = SimpleDateFormat("HH:mm", locale)
 
         list.adapter = object : ArrayAdapter<String>(this, list.id) {
             override fun getCount(): Int {
