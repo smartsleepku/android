@@ -59,11 +59,13 @@ class HistoryActivity : Activity() {
                     timeFormatter.format(night.to)
                 )
                 holder.disruptionCount.text = "${night.disruptionCount}"
+                val hours = (night.longestSleepDuration ?: 0) / 3600
+                val minutes = ((night.longestSleepDuration ?: 0) % 3600) / 60
                 holder.sleepDuration.text = getString(R.string.line_sleep_duration_value,
-                    night.longestSleepDuration?.div(3600)?.toInt(),
-                    (night.longestSleepDuration?.div(60))?.rem(60)?.toInt()
+                    hours,
+                    minutes
                 )
-                holder.unrestDuration.text = "${night.unrestDuration?.div(60)}"
+                holder.unrestDuration.text = "${(night.unrestDuration ?: 0) / 60}"
 
                 return line!!
             }
