@@ -79,7 +79,7 @@ fun countNights(): Int {
 
 fun fetchOneNight(date: Date): Night? {
     val pair = nightThresholds(date)
-    val cursor = db?.rawQuery("select * from nights where \"from\" = ?", arrayOf("${pair.first.time}"))
+    val cursor = db?.rawQuery("select * from nights where \"from\" = ${pair.first.time / 1000}", emptyArray())
     cursor ?: return null
     var night: Night? = null
     if(cursor.moveToNext()) {

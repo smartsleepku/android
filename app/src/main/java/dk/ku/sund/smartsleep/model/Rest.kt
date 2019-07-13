@@ -6,7 +6,7 @@ import dk.ku.sund.smartsleep.manager.db
 import java.util.*
 
 data class Rest(
-    var id: String?,
+    var id: Int?,
     var resting: Boolean?,
     var startTime: Date?,
     var endTime: Date?
@@ -14,7 +14,7 @@ data class Rest(
     companion object {
         fun initializeDatabase(db: SQLiteDatabase) {
             val createTableString = "create table if not exists rests(" +
-                    "id char(24) primary key not null," +
+                    "id integer primary key autoincrement," +
                     "resting integer," +
                     "startTime integer," +
                     "endTime integer)"
@@ -23,17 +23,23 @@ data class Rest(
     }
 
     constructor(cursor: Cursor): this(null, null, null, null) {
-        id = cursor.getString(cursor.getColumnIndex("id"))
+        id = cursor.getInt(cursor.getColumnIndex("id"))
         resting = cursor.getInt(cursor.getColumnIndex("resting")) != 0
         startTime = Date(cursor.getLong(cursor.getColumnIndex("startTime")) * 1000)
         endTime = Date(cursor.getLong(cursor.getColumnIndex("endTime")) * 1000)
     }
 
     fun save() {
-        if (id == null) { id = UUID.randomUUID().toString().toLowerCase() }
-        val insertStatementString = "insert or replace into rests (id, resting, startTime, endTime) values (?, ?, ?, ?)"
-        var resting = 0
-        if (this.resting!!) resting = 1
-        db?.execSQL(insertStatementString, arrayOf("'${id}'", resting, startTime!!.time / 1000, endTime?.time?.div(1000)))
+        if (id == null) {
+            val insertStatementString = "insert into rests (resting, startTime, endTime) values (?, ?, ?)"
+            var resting = 0
+            if (this.resting!!) resting = 1
+            db?.execSQL(insertStatementString, arrayOf(resting, startTime!!.time / 1000, endTime?.time?.div(1000)))
+        } else {
+            val updateStatementString = "update rests set resting = ?, startTime = ?, endTime = ? where id = ?"
+            var resting = 0
+            if (this.resting!!) resting = 1
+            db?.execSQL(updateStatementString, arrayOf(resting, startTime!!.time / 1000, endTime?.time?.div(1000), id))
+        }
     }
 }

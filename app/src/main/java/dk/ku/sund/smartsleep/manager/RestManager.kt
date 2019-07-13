@@ -33,16 +33,15 @@ fun fetchFirstRestTime(): Date {
     val min = cursor!!.getLong(0)
     cursor.close()
     if (min == 0L) return Date()
-    return Date(min)
+    return Date(min * 1000)
 }
 
 fun fetchLongestRest(from: Date, to: Date): Long {
-    val queryStatement = "select max(cast((min(endTime,?) - max(startTime,?)) as integer)) " +
+    val queryStatement = "select max(cast((min(endTime,${to.time / 1000}) - max(startTime,${from.time / 1000})) as integer)) " +
             "from rests " +
-            "where endTime > ? and startTime < ? " +
-            "and resting = 1 " +
-            "and endTime is not null"
-    val cursor = db?.rawQuery(queryStatement, arrayOf("${to.time}", "${from.time}", "${from.time}", "${to.time}"))
+            "where endTime > ${from.time / 1000} and startTime < ${to.time / 1000} " +
+            "and resting = 1"
+    val cursor = db?.rawQuery(queryStatement, emptyArray())
     if (cursor?.moveToNext() ?: false == false) {
         cursor?.close()
         return 0
@@ -55,10 +54,9 @@ fun fetchLongestRest(from: Date, to: Date): Long {
 fun fetchUnrestCount(from: Date, to: Date): Int {
     val queryStatement = "select count(1) " +
             "from rests " +
-            "where endTime > ? and startTime < ? " +
-            "and resting = 0 " +
-            "and endTime is not null"
-    val cursor = db?.rawQuery(queryStatement, arrayOf("${from.time}", "${to.time}"))
+            "where endTime > ${from.time / 1000} and startTime < ${to.time / 1000} " +
+            "and resting = 0"
+    val cursor = db?.rawQuery(queryStatement, emptyArray())
     if (cursor?.moveToNext() ?: false == false) {
         cursor?.close()
         return 0
@@ -69,12 +67,11 @@ fun fetchUnrestCount(from: Date, to: Date): Int {
 }
 
 fun fetchTotalUnrest(from: Date, to: Date): Long {
-    val queryStatement = "select sum(cast((min(endTime,?) - max(startTime,?)) as integer)) " +
+    val queryStatement = "select sum(min(endTime,${to.time / 1000}) - max(startTime,${from.time / 1000})) " +
             "from rests " +
-            "where endTime > ? and startTime < ? " +
-            "and resting = 0 " +
-            "and endTime is not null"
-    val cursor = db?.rawQuery(queryStatement, arrayOf("${to.time}", "${from.time}", "${from.time}", "${to.time}"))
+            "where endTime > ${from.time / 1000} and startTime < ${to.time / 1000} " +
+            "and resting = 0"
+    val cursor = db?.rawQuery(queryStatement, emptyArray())
     if (cursor?.moveToNext() ?: false == false) {
         cursor?.close()
         return 0

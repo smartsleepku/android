@@ -14,9 +14,9 @@ import java.util.*
 
 fun fetchSleeps(from: Date, to: Date): List<Sleep> {
     val cursor = db?.rawQuery("select * from sleeps " +
-            "where time >= ? " +
-            "and time <= ? " +
-            "order by time asc", arrayOf("${from.time}", "${to.time}"))
+            "where time >= ${from.time / 1000} " +
+            "and time <= ${to.time / 1000} " +
+            "order by time asc", emptyArray())
     cursor ?: return emptyList()
     val sleeps = mutableListOf<Sleep>()
     while (cursor.moveToNext()) {
