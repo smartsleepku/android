@@ -95,7 +95,7 @@ class ConfigureActivity : Activity() {
                 }),
                 cal.get(Calendar.HOUR_OF_DAY),
                 cal.get(Calendar.MINUTE),
-                false)
+                true)
                 .show()
         }
 
