@@ -2,8 +2,6 @@ package dk.ku.sund.smartsleep.manager
 
 import android.util.Log
 import dk.ku.sund.smartsleep.model.Night
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import java.util.*
@@ -96,30 +94,36 @@ fun purgeNights() {
 private val mutex = Mutex(false)
 
 fun generateNights() = runBlocking {
-    mutex.lock()
-    purgeNights()
-    var now = Date()
-    var from: Date
-    var to: Date
-    val first = fetchFirstRestTime()
-    val cal = Calendar.getInstance()
-    do {
-        val pair = nightThresholds(now)
-        from = pair.first
-        to = pair.second
-        Log.i("NightManager", "generating night from ${from} to ${to}...")
-        cal.time = now
-        cal.add(Calendar.DATE, -1)
-        now = cal.time
-        val night = Night(
-            null,
-            from,
-            to,
-            fetchUnrestCount(from, to),
-            fetchLongestRest(from, to),
-            fetchTotalUnrest(from, to)
-        )
-        night.save()
-    } while (from > first)
-    mutex.unlock()
+    try {
+        mutex.lock()
+        purgeNights()
+        var now = Date()
+        var from: Date
+        var to: Date
+        val first = fetchFirstRestTime()
+        val cal = Calendar.getInstance()
+        do {
+            val pair = nightThresholds(now)
+            from = pair.first
+            to = pair.second
+            if (from > Date()) continue;
+            Log.i("NightManager", "generating night from ${from} to ${to}...")
+            cal.time = now
+            cal.add(Calendar.DATE, -1)
+            now = cal.time
+            val night = Night(
+                null,
+                from,
+                to,
+                fetchUnrestCount(from, to),
+                fetchLongestRest(from, to),
+                fetchTotalUnrest(from, to)
+            )
+            night.save()
+        } while (from > first)
+    } catch (e: Exception) {
+        Log.e("NightManager", e.stackTrace.joinToString("\n"))
+    } finally {
+        mutex.unlock()
+    }
 }
