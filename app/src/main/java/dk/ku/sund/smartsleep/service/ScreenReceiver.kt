@@ -22,6 +22,7 @@ class ScreenReceiver() : BroadcastReceiver() {
             sleep = Sleep(null, Date(), false)
             sleep.save()
         } else {
+            Log.w("ScreenReceiver", "unknown screen event")
             return
         }
         updateLatestRest(sleep = sleep)
