@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import dk.ku.sund.smartsleep.manager.*
 import dk.ku.sund.smartsleep.model.Night
 import kotlinx.android.synthetic.main.activity_tab.*
@@ -45,11 +46,21 @@ class TabActivity : Activity() {
             }
             true
         }
+
+        if (!hasConfiguration) {
+            val intent = Intent(this, ConfigureActivity::class.java)
+            startActivity(intent)
+        }
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        hasFocus ?: return
+        update()
+    }
 
+    private fun update() {
+        Log.i("TabActivity", "update, hasConfiguration: ${hasConfiguration}")
         if (hasConfiguration) {
             GlobalScope.launch {
                 generateNights()
@@ -70,9 +81,6 @@ class TabActivity : Activity() {
                         (night.unrestDuration?.div(60))?.rem(60)?.toInt())
                 }
             }
-        } else {
-            val intent = Intent(this, ConfigureActivity::class.java)
-            startActivity(intent)
         }
     }
 }
