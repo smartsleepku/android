@@ -20,6 +20,8 @@ class TabActivity : Activity() {
         configure()
         trustKU()
 
+        initializeConfiguration(applicationContext)
+
         fab.setOnClickListener {
             val intent = Intent(this, ConfigureActivity::class.java)
             startActivity(intent)

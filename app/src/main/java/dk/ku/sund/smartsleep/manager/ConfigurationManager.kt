@@ -1,7 +1,9 @@
 package dk.ku.sund.smartsleep.manager
 
+import android.content.Context
 import androidx.core.content.edit
 import com.google.gson.GsonBuilder
+import devliving.online.securedpreferencestore.DefaultRecoveryHandler
 import devliving.online.securedpreferencestore.SecuredPreferenceStore
 import dk.ku.sund.smartsleep.model.Configuration
 import java.util.*
@@ -43,3 +45,11 @@ val currentConfiguration: Configuration
 
 val hasConfiguration: Boolean
     get() = configuration != null
+
+private var initialized = false
+
+fun initializeConfiguration(context: Context) {
+    if (initialized) return
+    initialized = true
+    SecuredPreferenceStore.init(context, DefaultRecoveryHandler())
+}

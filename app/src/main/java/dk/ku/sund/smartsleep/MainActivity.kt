@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import devliving.online.securedpreferencestore.DefaultRecoveryHandler
 import devliving.online.securedpreferencestore.SecuredPreferenceStore
 import dk.ku.sund.smartsleep.manager.hasJwt
+import dk.ku.sund.smartsleep.manager.initializeConfiguration
 import dk.ku.sund.smartsleep.manager.initializeDatabase
 import dk.ku.sund.smartsleep.service.ActivityRecognitionService
 import dk.ku.sund.smartsleep.service.ScreenService
@@ -17,7 +18,7 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
-        SecuredPreferenceStore.init(applicationContext, DefaultRecoveryHandler())
+        initializeConfiguration(applicationContext)
 
         initializeDatabase(this)
 
