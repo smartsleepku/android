@@ -26,7 +26,6 @@ class RequestAccessActivity : Activity() {
             startActivity(intent)
             finish()
         }
-
     }
 
 }

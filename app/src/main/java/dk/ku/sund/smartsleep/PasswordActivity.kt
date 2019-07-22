@@ -4,8 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
-import androidx.core.content.edit
-import devliving.online.securedpreferencestore.SecuredPreferenceStore
+import dk.ku.sund.smartsleep.manager.volatileStore
 import kotlinx.android.synthetic.main.content_password.*
 
 class PasswordActivity : Activity() {
@@ -17,7 +16,6 @@ class PasswordActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_password)
-        val prefs = SecuredPreferenceStore.getSharedInstance()
 
         errorcard.alpha = 0.0F
 
@@ -25,9 +23,7 @@ class PasswordActivity : Activity() {
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
                 val password = input.text.toString()
                 if (validPassword(password)) {
-                    prefs.edit {
-                        putString("password", password)
-                    }
+                    volatileStore["password"] = password
                     val intent = Intent(this, RequestAccessActivity::class.java)
                     startActivity(intent)
                     finish()

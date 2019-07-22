@@ -6,8 +6,7 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.util.Patterns
 import android.text.TextUtils
-import androidx.core.content.edit
-import devliving.online.securedpreferencestore.SecuredPreferenceStore
+import dk.ku.sund.smartsleep.manager.volatileStore
 import kotlinx.android.synthetic.main.content_email.*
 
 class EmailActivity : Activity() {
@@ -19,7 +18,6 @@ class EmailActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_email)
-        val prefs = SecuredPreferenceStore.getSharedInstance()
 
         errorcard.alpha = 0.0F
 
@@ -27,9 +25,7 @@ class EmailActivity : Activity() {
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
                 val email = input.text.toString()
                 if (validEmail(email)) {
-                    prefs.edit {
-                        putString("email", email)
-                    }
+                    volatileStore["email"] = email
                     val intent = Intent(this, PasswordActivity::class.java)
                     startActivity(intent)
                     finish()

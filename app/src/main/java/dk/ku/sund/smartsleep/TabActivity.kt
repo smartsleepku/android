@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import dk.ku.sund.smartsleep.manager.*
-import dk.ku.sund.smartsleep.model.Night
 import kotlinx.android.synthetic.main.activity_tab.*
 import kotlinx.android.synthetic.main.content_tab.*
 import kotlinx.coroutines.GlobalScope
@@ -20,8 +19,7 @@ class TabActivity : Activity() {
         setContentView(R.layout.activity_tab)
         configure()
         trustKU()
-
-        initializeConfiguration(applicationContext)
+        initializeStore(applicationContext)
 
         fab.setOnClickListener {
             val intent = Intent(this, ConfigureActivity::class.java)
@@ -55,7 +53,7 @@ class TabActivity : Activity() {
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        hasFocus ?: return
+        if (!hasFocus) return
         update()
     }
 

@@ -1,10 +1,8 @@
 package dk.ku.sund.smartsleep.manager
 
 import android.util.Log
-import androidx.core.content.edit
 import com.github.kittinunf.fuel.coroutines.awaitStringResult
 import com.github.kittinunf.fuel.httpPost
-import devliving.online.securedpreferencestore.SecuredPreferenceStore
 import dk.ku.sund.smartsleep.model.Sleep
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
@@ -30,8 +28,7 @@ fun bulkPostSleep() = runBlocking {
     if (!hasJwt) return@runBlocking
     try {
         mutex.lock()
-        val prefs = SecuredPreferenceStore.getSharedInstance()
-        val lastSync = Date(prefs.getLong("lastSleepSync", 0))
+        val lastSync = Date((load("lastSleepSync", String::class.java) ?: "0").toLong())
         val fetchTime = Date()
         val sleeps = fetchSleeps(lastSync, fetchTime)
         val result = "/sleep/bulk".httpPost()
@@ -45,9 +42,7 @@ fun bulkPostSleep() = runBlocking {
             Log.e("SleepManager", "Failed posting sleeps: ${result.component2().toString()}")
             return@runBlocking
         }
-        prefs.edit {
-            putLong("lastSleepSync", fetchTime.time)
-        }
+        store("lastSleepSync", "${fetchTime.time}")
     } catch (e: Exception) {
         Log.e("SleepManager", e.stackTrace.joinToString("\n"))
     } finally {

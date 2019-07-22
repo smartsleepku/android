@@ -1,10 +1,6 @@
 package dk.ku.sund.smartsleep.manager
 
-import android.content.Context
-import androidx.core.content.edit
 import com.google.gson.GsonBuilder
-import devliving.online.securedpreferencestore.DefaultRecoveryHandler
-import devliving.online.securedpreferencestore.SecuredPreferenceStore
 import dk.ku.sund.smartsleep.model.Configuration
 import java.util.*
 
@@ -14,9 +10,6 @@ private fun dateWithHour(hour: Int): Date {
     cal.set(Calendar.MINUTE, 0)
     return cal.time
 }
-
-private val prefs: SecuredPreferenceStore?
-    get() = SecuredPreferenceStore.getSharedInstance()
 
 val gson = GsonBuilder()
     .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
@@ -30,14 +23,10 @@ val defaultConfiguration = Configuration(
 )
 
 var configuration: Configuration?
-    get() = gson
-        .fromJson(prefs!!
-            .getString("configuration", null), Configuration::class.java)
+    get() = load("configuration", Configuration::class.java)
     set(value) {
         value ?: return
-        prefs?.edit {
-            putString("configuration", gson.toJson(value))
-        }
+        store("configuration", value)
     }
 
 val currentConfiguration: Configuration
@@ -45,11 +34,3 @@ val currentConfiguration: Configuration
 
 val hasConfiguration: Boolean
     get() = configuration != null
-
-private var initialized = false
-
-fun initializeConfiguration(context: Context) {
-    if (initialized) return
-    initialized = true
-    SecuredPreferenceStore.init(context, DefaultRecoveryHandler())
-}

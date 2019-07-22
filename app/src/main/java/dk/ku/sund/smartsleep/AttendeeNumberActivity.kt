@@ -4,12 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
-import androidx.core.content.edit
-import devliving.online.securedpreferencestore.DefaultRecoveryHandler
-import devliving.online.securedpreferencestore.SecuredPreferenceStore
-import dk.ku.sund.smartsleep.manager.configure
-import dk.ku.sund.smartsleep.manager.trustKU
-import dk.ku.sund.smartsleep.manager.validAttendee
+import dk.ku.sund.smartsleep.manager.*
 import kotlinx.android.synthetic.main.content_attendee_number.*
 
 class AttendeeNumberActivity : Activity() {
@@ -19,7 +14,6 @@ class AttendeeNumberActivity : Activity() {
         setContentView(R.layout.activity_attendee_number)
         configure()
         trustKU()
-        val prefs = SecuredPreferenceStore.getSharedInstance()
 
         errorcard.alpha = 0.0F
 
@@ -29,9 +23,7 @@ class AttendeeNumberActivity : Activity() {
                 run {
                     if (validAttendee(code)) {
                         runOnUiThread {
-                            prefs.edit {
-                                putString("attendeeCode", code)
-                            }
+                            volatileStore["attendeeCode"] = code
                             val intent = Intent(this, EmailActivity::class.java)
                             startActivity(intent)
                             finish()

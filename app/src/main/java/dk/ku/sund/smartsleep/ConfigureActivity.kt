@@ -7,8 +7,6 @@ import android.text.format.DateFormat
 import kotlinx.android.synthetic.main.activity_configure.*
 import kotlinx.android.synthetic.main.content_configure.*
 import android.app.TimePickerDialog
-import devliving.online.securedpreferencestore.DefaultRecoveryHandler
-import devliving.online.securedpreferencestore.SecuredPreferenceStore
 import dk.ku.sund.smartsleep.manager.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -20,7 +18,7 @@ class ConfigureActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_configure)
 
-        initializeConfiguration(applicationContext)
+        initializeStore(applicationContext)
 
         fab.setOnClickListener {
             val intent = Intent(this, HelpActivity::class.java)
