@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import dk.ku.sund.smartsleep.manager.*
 import kotlinx.android.synthetic.main.activity_tab.*
 import kotlinx.android.synthetic.main.content_tab.*
@@ -61,7 +62,22 @@ class TabActivity : Activity() {
         Log.i("TabActivity", "update, hasConfiguration: ${hasConfiguration}")
         if (hasConfiguration) {
             GlobalScope.launch {
-                generateNights()
+                generateNights(object : NightGeneratorUpdateHolder() {
+                    override fun update() {
+                        val done = this.done
+                        val total = this.total
+                        val current = this.current
+                        runOnUiThread {
+                            if (done) {
+                                loading.visibility = View.INVISIBLE
+                            } else {
+                                loading.visibility = View.VISIBLE
+                                loading.max = total.toInt()
+                                loading.progress = current.toInt()
+                            }
+                        }
+                    }
+                })
                 var night = fetchOneNight(Date())
                 if (night == null || (night.longestSleepDuration!! + night.unrestDuration!! == 0L)) {
                     val cal = Calendar.getInstance()

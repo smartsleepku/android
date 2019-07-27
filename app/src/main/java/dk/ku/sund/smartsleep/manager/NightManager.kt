@@ -6,6 +6,12 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import java.util.*
 
+open class NightGeneratorUpdateHolder(var total: Long = 0, var current: Long = 0, var done: Boolean = false) {
+    open fun update() {}
+}
+
+private val mutex = Mutex(false)
+
 private fun isDateInWeekend(date: Date): Boolean {
     val cal = Calendar.getInstance()
     cal.time = date
@@ -94,9 +100,7 @@ fun purgeNights() {
     db?.execSQL("delete from nights")
 }
 
-private val mutex = Mutex(false)
-
-fun generateNights() = runBlocking {
+fun generateNights(updateHolder: NightGeneratorUpdateHolder) = runBlocking {
     try {
         mutex.lock()
         purgeNights()
@@ -104,6 +108,8 @@ fun generateNights() = runBlocking {
         var from: Date
         var to: Date
         val first = fetchFirstRestTime()
+        updateHolder.total = now.time - first.time
+        updateHolder.update()
         val cal = Calendar.getInstance()
         do {
             val pair = nightThresholds(now)
@@ -122,10 +128,14 @@ fun generateNights() = runBlocking {
                 fetchTotalUnrest(from, to)
             )
             night.save()
+            updateHolder.current += 60 * 60 * 24 * 1000
+            updateHolder.update()
         } while (from > first)
     } catch (e: Exception) {
         Log.e("NightManager", e.stackTrace.joinToString("\n"))
     } finally {
+        updateHolder.done = true
+        updateHolder.update()
         mutex.unlock()
     }
 }
