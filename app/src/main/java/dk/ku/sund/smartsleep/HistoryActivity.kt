@@ -7,9 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import dk.ku.sund.smartsleep.manager.NightGeneratorUpdateHolder
 import dk.ku.sund.smartsleep.manager.fetchNights
-import dk.ku.sund.smartsleep.model.Night
+import dk.ku.sund.smartsleep.manager.generateNights
 import kotlinx.android.synthetic.main.activity_history.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -27,12 +30,13 @@ class HistoryActivity : Activity() {
         setContentView(R.layout.activity_history)
 
         val inflater = LayoutInflater.from(this)
-        val nights = fetchNights()
+        var nights = fetchNights()
         val locale = Locale("da_DK")
         val dateFormatter = SimpleDateFormat("d. MMMM", locale)
         val timeFormatter = SimpleDateFormat("HH:mm", locale)
 
         list.adapter = object : ArrayAdapter<String>(this, list.id) {
+
             override fun getCount(): Int {
                 return nights.count()
             }
@@ -70,6 +74,22 @@ class HistoryActivity : Activity() {
                 return line!!
             }
         }
+
+        GlobalScope.launch {
+            generateNights(object : NightGeneratorUpdateHolder() {
+                override fun update() {
+                    val fetched = fetchNights()
+                    val done = this.done
+                    runOnUiThread {
+                        if (done) { loading.visibility = View.GONE }
+                        else { loading.visibility = View.VISIBLE }
+                        nights = fetched
+                        (list.adapter as ArrayAdapter<String>).notifyDataSetChanged()
+                    }
+                }
+            })
+        }
+
     }
 }
 

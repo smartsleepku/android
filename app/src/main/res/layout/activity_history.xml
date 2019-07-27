@@ -15,6 +15,13 @@
             android:layout_height="1dp"
             android:background="#9A9A9A"
     />
+    <ProgressBar
+            style="?android:attr/progressBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/loading"
+            android:visibility="gone"
+            android:indeterminate="true"/>
     <ListView
             android:id="@+id/list"
             android:layout_width="match_parent"
