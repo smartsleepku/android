@@ -9,8 +9,8 @@ import java.util.*
 private fun isDateInWeekend(date: Date): Boolean {
     val cal = Calendar.getInstance()
     cal.time = date
-    val weekday = cal.get(Calendar.DAY_OF_WEEK)
-    return weekday == Calendar.SATURDAY || weekday == Calendar.SUNDAY
+    val day = cal.get(Calendar.DAY_OF_WEEK)
+    return day == Calendar.SATURDAY || day == Calendar.SUNDAY
 }
 
 fun nightThresholds(date: Date): Pair<Date, Date> {
@@ -39,6 +39,9 @@ fun nightThresholds(date: Date): Pair<Date, Date> {
     cal.set(Calendar.MINUTE, eveningMinute)
     cal.set(Calendar.SECOND, 0)
     cal.set(Calendar.MILLISECOND, 0)
+    if (cal.time > date) {
+        cal.add(Calendar.DATE, -1)
+    }
     val start = cal.time
     cal.time = date
     cal.set(Calendar.HOUR_OF_DAY, morningHour)
@@ -106,10 +109,9 @@ fun generateNights() = runBlocking {
             val pair = nightThresholds(now)
             from = pair.first
             to = pair.second
-            if (from > Date()) continue;
-            Log.i("NightManager", "generating night from ${from} to ${to}...")
             cal.time = now
             cal.add(Calendar.DATE, -1)
+            Log.i("NightManager", "generating night from ${from} to ${to}...")
             now = cal.time
             val night = Night(
                 null,
