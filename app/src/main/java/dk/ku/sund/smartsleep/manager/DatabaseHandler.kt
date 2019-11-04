@@ -3,12 +3,9 @@ package dk.ku.sund.smartsleep.manager
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import dk.ku.sund.smartsleep.model.Night
-import dk.ku.sund.smartsleep.model.RecognizedActivity
-import dk.ku.sund.smartsleep.model.Rest
-import dk.ku.sund.smartsleep.model.Sleep
+import dk.ku.sund.smartsleep.model.*
 
-private val DATABASE_VERSION = 1
+private val DATABASE_VERSION = 2
 private val DATABASE_NAME = "smartsleep.db"
 
 var databaseHandler: DatabaseHandler? = null
@@ -21,11 +18,14 @@ class DatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         Rest.initializeDatabase(db)
         Night.initializeDatabase(db)
         RecognizedActivity.initializeDatabase(db)
+        Heartbeat.initializeDatabase(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int,
                            newVersion: Int) {
-
+        if (oldVersion == 1 && newVersion == 2) {
+            Heartbeat.initializeDatabase(db)
+        }
     }
 }
 
