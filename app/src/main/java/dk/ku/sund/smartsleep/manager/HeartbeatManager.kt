@@ -29,7 +29,7 @@ private val constraints = Constraints.Builder()
     .build()
 
 val uploadRequest =
-    PeriodicWorkRequestBuilder<HeartbeatUploadWorker>(15, TimeUnit.MINUTES)
+    PeriodicWorkRequestBuilder<HeartbeatUploadWorker>(3, TimeUnit.HOURS)
         .setConstraints(constraints)
         .build()
 
@@ -74,7 +74,6 @@ fun bulkPostHeartbeat() : Boolean = runBlocking {
         }
         deleteOldHeartbeats(fetchTime)
         store("lastHeartbeatSync", "${fetchTime.time}")
-        Log.i("HeartbeatManager", "Uploaded heartbeats")
     } catch (e: Exception) {
         Log.e("HeartbeatManager", e.stackTrace.joinToString("\n"))
     } finally {
