@@ -28,16 +28,21 @@ class HeartbeatService : Service() {
         super.onCreate()
         configure()
         trustKU()
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, startId, startId)
         if (timer == null) {
             timer = Timer()
         }
         timer!!.scheduleAtFixedRate(HeartbeatTimerTask(), HEARTBEAT_INTERVAL, HEARTBEAT_INTERVAL)
         WorkManager.getInstance(this).enqueue(uploadRequest)
+        return START_STICKY
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        super.onStartCommand(intent, startId, startId)
-        return START_STICKY
+    override fun onDestroy() {
+        timer = null
+        super.onDestroy()
     }
 
     internal inner class HeartbeatTimerTask : TimerTask() {
