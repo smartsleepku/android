@@ -29,7 +29,7 @@ private val constraints = Constraints.Builder()
     .build()
 
 val uploadRequest =
-    PeriodicWorkRequestBuilder<HeartbeatUploadWorker>(3, TimeUnit.HOURS)
+    PeriodicWorkRequestBuilder<HeartbeatUploadWorker>(1, TimeUnit.HOURS)
         .setConstraints(constraints)
         .build()
 

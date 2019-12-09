@@ -4,12 +4,22 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.content.IntentFilter
+import android.os.Handler
+import android.util.Log
+import androidx.work.WorkManager
 import dk.ku.sund.smartsleep.manager.configure
 import dk.ku.sund.smartsleep.manager.trustKU
+import dk.ku.sund.smartsleep.manager.uploadRequest
+import dk.ku.sund.smartsleep.model.Heartbeat
+import java.util.*
 
 class ScreenService : Service() {
 
     var receiver: ScreenReceiver? = null
+
+    private val handler = Handler()
+    private var timer: Timer? = null
+    private val HEARTBEAT_INTERVAL = (5 * 60 * 1000).toLong() // 5 minutes
 
     inner class Binder : android.os.Binder() {
         fun getService(): ScreenService = this@ScreenService
@@ -31,10 +41,29 @@ class ScreenService : Service() {
         filter.addAction(Intent.ACTION_SCREEN_OFF)
         receiver = ScreenReceiver()
         registerReceiver(receiver, filter)
+
+        if (timer == null) {
+            timer = Timer()
+        }
+        timer!!.scheduleAtFixedRate(HeartbeatTimerTask(), 0, HEARTBEAT_INTERVAL)
+        WorkManager.getInstance(this).enqueue(uploadRequest)
     }
 
     override fun onDestroy() {
         unregisterReceiver(receiver)
+        timer = null
         super.onDestroy()
+    }
+
+    internal inner class HeartbeatTimerTask : TimerTask() {
+
+        override fun run() {
+            handler.post {
+                Log.i("Heartbeat", "Heartbeat generated")
+                val heartbeat = Heartbeat(null, Date())
+                heartbeat.save()
+            }
+        }
+
     }
 }
