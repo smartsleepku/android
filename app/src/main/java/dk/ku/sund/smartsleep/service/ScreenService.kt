@@ -11,6 +11,7 @@ import dk.ku.sund.smartsleep.manager.configure
 import dk.ku.sund.smartsleep.manager.trustKU
 import dk.ku.sund.smartsleep.manager.uploadRequest
 import dk.ku.sund.smartsleep.model.Heartbeat
+import dk.ku.sund.smartsleep.model.Appdebug
 import java.util.*
 
 class ScreenService : Service() {
@@ -38,6 +39,8 @@ class ScreenService : Service() {
         super.onCreate()
         configure()
         trustKU()
+        val ad = Appdebug(null, Date(), "sstart")
+        ad.save()
         val filter = IntentFilter(Intent.ACTION_SCREEN_ON)
         filter.addAction(Intent.ACTION_SCREEN_OFF)
         receiver = ScreenReceiver()
@@ -55,6 +58,8 @@ class ScreenService : Service() {
         unregisterReceiver(receiver)
         timer = null
         Log.d("SHeartbeat", "Screen destroyed")
+        val ad = Appdebug(null, Date(), "sdestroy")
+        ad.save()
         super.onDestroy()
     }
 
