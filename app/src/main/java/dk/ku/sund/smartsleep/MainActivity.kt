@@ -2,6 +2,7 @@ package dk.ku.sund.smartsleep
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity;
 import dk.ku.sund.smartsleep.manager.*
 import dk.ku.sund.smartsleep.service.ActivityRecognitionService
@@ -19,6 +20,7 @@ class MainActivity : AppCompatActivity() {
 
         startService(Intent(this@MainActivity, ScreenService::class.java))
         startService(Intent(this@MainActivity, ActivityRecognitionService::class.java))
+        Log.d("SHeartbeat", "App is opened")
 
         if (!hasJwt) {
             val intent = Intent(this, WelcomeActivity::class.java)

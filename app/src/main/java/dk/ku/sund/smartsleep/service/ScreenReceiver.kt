@@ -26,6 +26,7 @@ class ScreenReceiver() : BroadcastReceiver() {
             return
         }
         updateLatestRest(sleep = sleep)
+        Log.d("SHeartbeat", "Screen event")
 
         GlobalScope.launch {
             bulkPostSleep()

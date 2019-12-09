@@ -69,13 +69,14 @@ fun bulkPostHeartbeat() : Boolean = runBlocking {
             .body(gson.toJson(heartbeats))
             .awaitStringResult()
         if (result.component2() != null) {
-            Log.e("HeartbeatManager", "Failed posting heartbeats: ${result.component2().toString()}")
+            Log.e("SHeartbeat", "Failed posting heartbeats: ${result.component2().toString()}")
             return@runBlocking false
         }
         deleteOldHeartbeats(fetchTime)
         store("lastHeartbeatSync", "${fetchTime.time}")
+        Log.d("SHeartbeat", "Succeded posting heartbeats")
     } catch (e: Exception) {
-        Log.e("HeartbeatManager", e.stackTrace.joinToString("\n"))
+        Log.e("SHeartbeat", e.stackTrace.joinToString("\n"))
     } finally {
         mutex.unlock()
     }

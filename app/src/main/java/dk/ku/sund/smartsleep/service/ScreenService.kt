@@ -19,7 +19,7 @@ class ScreenService : Service() {
 
     private val handler = Handler()
     private var timer: Timer? = null
-    private val HEARTBEAT_INTERVAL = (5 * 60 * 1000).toLong() // 5 minutes
+    private val HEARTBEAT_INTERVAL = (1 * 60 * 1000).toLong() // 5 minutes
 
     inner class Binder : android.os.Binder() {
         fun getService(): ScreenService = this@ScreenService
@@ -30,6 +30,7 @@ class ScreenService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
+        Log.d("SHeartbeat", "Screen started")
         return START_STICKY
     }
 
@@ -45,6 +46,7 @@ class ScreenService : Service() {
         if (timer == null) {
             timer = Timer()
         }
+        Log.d("SHeartbeat", "Screen created")
         timer!!.scheduleAtFixedRate(HeartbeatTimerTask(), 0, HEARTBEAT_INTERVAL)
         WorkManager.getInstance(this).enqueue(uploadRequest)
     }
@@ -52,6 +54,7 @@ class ScreenService : Service() {
     override fun onDestroy() {
         unregisterReceiver(receiver)
         timer = null
+        Log.d("SHeartbeat", "Screen destroyed")
         super.onDestroy()
     }
 
@@ -59,7 +62,7 @@ class ScreenService : Service() {
 
         override fun run() {
             handler.post {
-                Log.i("Heartbeat", "Heartbeat generated")
+                Log.d("SHeartbeat", "Heartbeat generated")
                 val heartbeat = Heartbeat(null, Date())
                 heartbeat.save()
             }
