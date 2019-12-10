@@ -15,7 +15,14 @@ class HeartbeatUploadWorker(appContext: Context, workerParams: WorkerParameters)
     : Worker(appContext, workerParams) {
 
     override fun doWork(): Result {
-        return if (bulkPostHeartbeat()) {
+        var result = false
+        try {
+            result = bulkPostHeartbeat()
+        }
+        catch (e: Exception) {
+            Log.e("SHeartbeat", e.stackTrace.joinToString("\n"))
+        }
+        return if (result) {
             Result.success()
         } else {
             Result.retry()
