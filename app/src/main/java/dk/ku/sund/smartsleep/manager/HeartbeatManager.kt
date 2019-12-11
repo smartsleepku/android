@@ -11,28 +11,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import java.util.*
 
-class HeartbeatUploadWorker(appContext: Context, workerParams: WorkerParameters)
-    : Worker(appContext, workerParams) {
-
-    override fun doWork(): Result {
-        return if (bulkPostHeartbeat()) {
-            Result.success()
-        } else {
-            Result.retry()
-        }
-    }
-}
-
-private val constraints = Constraints.Builder()
-    .setRequiredNetworkType(NetworkType.CONNECTED)
-    .setRequiresBatteryNotLow(true)
-    .build()
-
-val uploadRequest =
-    PeriodicWorkRequestBuilder<HeartbeatUploadWorker>(1, TimeUnit.HOURS)
-        .setConstraints(constraints)
-        .build()
-
 fun fetchHeartbeats(from: Date, to: Date): List<Heartbeat> {
     val cursor = db?.rawQuery("select * from heartbeats " +
             "where time >= ${from.time / 1000} " +
@@ -55,6 +33,7 @@ fun deleteOldHeartbeats(to: Date) {
 private val mutex = Mutex(false)
 
 fun bulkPostHeartbeat() : Boolean = runBlocking {
+    var retval = false
     if (!hasJwt) return@runBlocking false
     try {
         mutex.lock()
@@ -74,11 +53,12 @@ fun bulkPostHeartbeat() : Boolean = runBlocking {
         }
         deleteOldHeartbeats(fetchTime)
         store("lastHeartbeatSync", "${fetchTime.time}")
+        retval = true
         Log.d("SHeartbeat", "Succeded posting heartbeats")
     } catch (e: Exception) {
         Log.e("SHeartbeat", e.stackTrace.joinToString("\n"))
     } finally {
         mutex.unlock()
     }
-    return@runBlocking true
+    return@runBlocking retval
 }

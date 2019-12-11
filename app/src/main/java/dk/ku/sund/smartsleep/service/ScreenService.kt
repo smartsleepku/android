@@ -6,11 +6,12 @@ import android.os.IBinder
 import android.content.IntentFilter
 import android.os.Handler
 import android.util.Log
-import androidx.work.WorkManager
+import dk.ku.sund.smartsleep.manager.bulkPostHeartbeat
 import dk.ku.sund.smartsleep.manager.configure
 import dk.ku.sund.smartsleep.manager.trustKU
-import dk.ku.sund.smartsleep.manager.uploadRequest
 import dk.ku.sund.smartsleep.model.Heartbeat
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.*
 
 class ScreenService : Service() {
@@ -48,7 +49,6 @@ class ScreenService : Service() {
         }
         Log.d("SHeartbeat", "Screen created")
         timer!!.scheduleAtFixedRate(HeartbeatTimerTask(), 0, HEARTBEAT_INTERVAL)
-        WorkManager.getInstance(this).enqueue(uploadRequest)
     }
 
     override fun onDestroy() {
@@ -65,6 +65,9 @@ class ScreenService : Service() {
                 Log.d("SHeartbeat", "Heartbeat generated")
                 val heartbeat = Heartbeat(null, Date())
                 heartbeat.save()
+                GlobalScope.launch {
+                    bulkPostHeartbeat()
+                }
             }
         }
 
