@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.work.*
 import com.github.kittinunf.fuel.coroutines.awaitStringResult
 import com.github.kittinunf.fuel.httpPost
+import dk.ku.sund.smartsleep.model.Appdebug
 import dk.ku.sund.smartsleep.model.Heartbeat
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
@@ -18,9 +19,13 @@ class HeartbeatUploadWorker(appContext: Context, workerParams: WorkerParameters)
         var result = false
         try {
             result = bulkPostHeartbeat()
+            Log.e("SHeartbeat", "Returned "+result.toString())
         }
         catch (e: Exception) {
             Log.e("SHeartbeat", e.stackTrace.joinToString("\n"))
+            val ad = Appdebug(null, Date(), "exception")
+            ad.save()
+            store("uploadError", e.stackTrace.joinToString("\n"))
         }
         return if (result) {
             Result.success()
@@ -36,7 +41,7 @@ private val constraints = Constraints.Builder()
     .build()
 
 val uploadRequest =
-    PeriodicWorkRequestBuilder<HeartbeatUploadWorker>(1, TimeUnit.HOURS)
+    PeriodicWorkRequestBuilder<HeartbeatUploadWorker>(15, TimeUnit.MINUTES)
         .setConstraints(constraints)
         .build()
 
@@ -62,6 +67,13 @@ fun deleteOldHeartbeats(to: Date) {
 private val mutex = Mutex(false)
 
 fun bulkPostHeartbeat() : Boolean = runBlocking {
+    var retval = false
+    if (!hasJwt) {
+        Log.e("SHeartbeat", "No JWT")
+        val ad = Appdebug(null, Date(), "nojwt")
+        ad.save()
+        store("nojwt", "dummy")
+    }
     if (!hasJwt) return@runBlocking false
     try {
         mutex.lock()
@@ -82,10 +94,15 @@ fun bulkPostHeartbeat() : Boolean = runBlocking {
         deleteOldHeartbeats(fetchTime)
         store("lastHeartbeatSync", "${fetchTime.time}")
         Log.d("SHeartbeat", "Succeded posting heartbeats")
+        retval = true
     } catch (e: Exception) {
         Log.e("SHeartbeat", e.stackTrace.joinToString("\n"))
+        val ad = Appdebug(null, Date(), "e3")
+        ad.save()
+        store("uploadError3", e.stackTrace.joinToString("\n"))
     } finally {
         mutex.unlock()
     }
-    return@runBlocking true
+    Log.i("SHeartbeat", "retval is "+retval.toString())
+    return@runBlocking retval
 }
