@@ -1,10 +1,13 @@
 package dk.ku.sund.smartsleep.service
 
+import android.R
+import android.app.Notification
+import androidx.core.app.NotificationCompat
 import android.app.Service
 import android.content.Intent
-import android.os.IBinder
 import android.content.IntentFilter
 import android.os.Handler
+import android.os.IBinder
 import android.util.Log
 import dk.ku.sund.smartsleep.manager.bulkPostHeartbeat
 import dk.ku.sund.smartsleep.manager.configure
@@ -13,6 +16,8 @@ import dk.ku.sund.smartsleep.model.Heartbeat
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.*
+
+const val NOTIFICATION_CHANNEL_ID = "cid"
 
 class ScreenService : Service() {
 
@@ -39,6 +44,15 @@ class ScreenService : Service() {
         super.onCreate()
         configure()
         trustKU()
+
+        var builder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+            //.setSmallIcon(R.drawable.notification_icon)
+            .setContentTitle("Smart Sleep")
+            .setContentText("Smart Sleep is currently running")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        startForeground(1, builder.build())
+
         val filter = IntentFilter(Intent.ACTION_SCREEN_ON)
         filter.addAction(Intent.ACTION_SCREEN_OFF)
         receiver = ScreenReceiver()
