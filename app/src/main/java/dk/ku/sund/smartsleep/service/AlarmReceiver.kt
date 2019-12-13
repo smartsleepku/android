@@ -8,7 +8,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
-import android.util.Log
 import dk.ku.sund.smartsleep.manager.*
 import dk.ku.sund.smartsleep.model.Heartbeat
 import kotlinx.coroutines.GlobalScope
@@ -20,7 +19,6 @@ class AlarmReceiver : BroadcastReceiver() {
     private var isInitialized = false
 
     override fun onReceive(context: Context, intent: Intent) {
-        Log.d("SHeartbeat", "Alarm event")
         var alarmMgr: AlarmManager? = null
         lateinit var alarmIntent: PendingIntent
         alarmMgr = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
@@ -37,16 +35,13 @@ class AlarmReceiver : BroadcastReceiver() {
             context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager?
         for (service in manager!!.getRunningServices(Int.MAX_VALUE)) {
             if (service.service.className == "dk.ku.sund.smartsleep.service.ScreenService") {
-                //Log.d("SHeartbeat", "SmartSleep is running")
                 if (!isInitialized) {
-                    Log.d("SHeartbeat", "Initializing second process environment")
                     configure()
                     trustKU()
                     initializeStore(context)
                     initializeDatabase(context)
                     isInitialized = true
                 }
-                Log.d("SHeartbeat", "Heartbeat generated")
                 val heartbeat = Heartbeat(null, Date())
                 heartbeat.save()
                 GlobalScope.launch {

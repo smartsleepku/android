@@ -30,9 +30,6 @@ fun deleteOldSleeps(to: Date) {
 private val mutex = Mutex(false)
 
 fun bulkPostSleep() = runBlocking {
-    if (!hasJwt) {
-        store("sleepUploadError1", "noJwt")
-    }
     if (!hasJwt) return@runBlocking
     try {
         mutex.lock()
@@ -47,7 +44,6 @@ fun bulkPostSleep() = runBlocking {
             .body(gson.toJson(sleeps))
             .awaitStringResult()
         if (result.component2() != null) {
-            store("sleepUploadError2", result.component2().toString())
             Log.e("SleepManager", "Failed posting sleeps: ${result.component2().toString()}")
             return@runBlocking
         }
@@ -55,7 +51,6 @@ fun bulkPostSleep() = runBlocking {
         store("lastSleepSync", "${fetchTime.time}")
     } catch (e: Exception) {
         Log.e("SleepManager", e.stackTrace.joinToString("\n"))
-        store("sleepUploadError3", e.stackTrace.joinToString("\n"))
     } finally {
         mutex.unlock()
     }

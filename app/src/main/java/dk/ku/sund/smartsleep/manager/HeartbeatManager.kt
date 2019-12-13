@@ -1,15 +1,14 @@
 package dk.ku.sund.smartsleep.manager
 
-import android.content.Context
-import java.util.concurrent.TimeUnit
 import android.util.Log
-import androidx.work.*
 import com.github.kittinunf.fuel.coroutines.awaitStringResult
 import com.github.kittinunf.fuel.httpPost
 import dk.ku.sund.smartsleep.model.Heartbeat
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import java.util.*
+
+const val HEARTBEAT_INTERVAL = (5 * 60 * 1000).toLong() // 10 minutes
 
 fun fetchHeartbeats(from: Date, to: Date): List<Heartbeat> {
     val cursor = db?.rawQuery("select * from heartbeats " +
@@ -54,7 +53,6 @@ fun bulkPostHeartbeat() : Boolean = runBlocking {
         deleteOldHeartbeats(fetchTime)
         store("lastHeartbeatSync", "${fetchTime.time}")
         retval = true
-        Log.d("SHeartbeat", "Succeded posting heartbeats")
     } catch (e: Exception) {
         Log.e("SHeartbeat", e.stackTrace.joinToString("\n"))
     } finally {
