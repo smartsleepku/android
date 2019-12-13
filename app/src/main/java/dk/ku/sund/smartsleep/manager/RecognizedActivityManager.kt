@@ -22,6 +22,11 @@ private fun fetchRecognizedActivities(from: Date, to: Date): List<RecognizedActi
     return activities
 }
 
+fun deleteOldActivities(to: Date) {
+    db?.execSQL("delete from activities " +
+            "where time <= ${to.time} ")
+}
+
 private val mutex = Mutex(false)
 
 fun postRecognizedActivities() = runBlocking {
@@ -43,6 +48,7 @@ fun postRecognizedActivities() = runBlocking {
             Log.e("RecognizedActivityMgr", "Failed posting activity: ${result.component2().toString()}")
             return@forEach
         }
+        deleteOldActivities(fetchTime)
         store("lastActivitySync", "${fetchTime.time}")
     }
     mutex.unlock()

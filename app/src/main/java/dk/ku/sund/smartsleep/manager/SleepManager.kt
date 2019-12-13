@@ -22,6 +22,11 @@ fun fetchSleeps(from: Date, to: Date): List<Sleep> {
     return sleeps
 }
 
+fun deleteOldSleeps(to: Date) {
+    db?.execSQL("delete from sleeps " +
+            "where time <= ${to.time / 1000} ")
+}
+
 private val mutex = Mutex(false)
 
 fun bulkPostSleep() = runBlocking {
@@ -46,6 +51,7 @@ fun bulkPostSleep() = runBlocking {
             Log.e("SleepManager", "Failed posting sleeps: ${result.component2().toString()}")
             return@runBlocking
         }
+        deleteOldSleeps(fetchTime)
         store("lastSleepSync", "${fetchTime.time}")
     } catch (e: Exception) {
         Log.e("SleepManager", e.stackTrace.joinToString("\n"))
