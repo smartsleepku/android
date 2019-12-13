@@ -10,7 +10,7 @@ import java.util.*
 
 private fun fetchRecognizedActivities(from: Date, to: Date): List<RecognizedActivity> {
     val cursor = db?.rawQuery("select * from activities " +
-            "where time >= ? " +
+            "where time > ? " +
             "and time <= ? " +
             "order by time asc", arrayOf("${from.time}", "${to.time}"))
     cursor ?: return emptyList()

@@ -10,7 +10,7 @@ import java.util.*
 
 fun fetchSleeps(from: Date, to: Date): List<Sleep> {
     val cursor = db?.rawQuery("select * from sleeps " +
-            "where time >= ${from.time / 1000} " +
+            "where time > ${from.time / 1000} " +
             "and time <= ${to.time / 1000} " +
             "order by time asc", emptyArray())
     cursor ?: return emptyList()
@@ -25,6 +25,9 @@ fun fetchSleeps(from: Date, to: Date): List<Sleep> {
 private val mutex = Mutex(false)
 
 fun bulkPostSleep() = runBlocking {
+    if (!hasJwt) {
+        store("sleepUploadError1", "noJwt")
+    }
     if (!hasJwt) return@runBlocking
     try {
         mutex.lock()
@@ -39,12 +42,14 @@ fun bulkPostSleep() = runBlocking {
             .body(gson.toJson(sleeps))
             .awaitStringResult()
         if (result.component2() != null) {
+            store("sleepUploadError2", result.component2().toString())
             Log.e("SleepManager", "Failed posting sleeps: ${result.component2().toString()}")
             return@runBlocking
         }
         store("lastSleepSync", "${fetchTime.time}")
     } catch (e: Exception) {
         Log.e("SleepManager", e.stackTrace.joinToString("\n"))
+        store("sleepUploadError3", e.stackTrace.joinToString("\n"))
     } finally {
         mutex.unlock()
     }
