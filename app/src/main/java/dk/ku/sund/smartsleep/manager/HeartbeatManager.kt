@@ -13,7 +13,7 @@ import java.util.*
 
 fun fetchHeartbeats(from: Date, to: Date): List<Heartbeat> {
     val cursor = db?.rawQuery("select * from heartbeats " +
-            "where time >= ${from.time / 1000} " +
+            "where time > ${from.time / 1000} " +
             "and time <= ${to.time / 1000} " +
             "order by time asc", emptyArray())
     cursor ?: return emptyList()

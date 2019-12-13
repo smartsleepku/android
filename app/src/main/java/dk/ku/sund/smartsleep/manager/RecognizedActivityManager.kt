@@ -10,7 +10,7 @@ import java.util.*
 
 private fun fetchRecognizedActivities(from: Date, to: Date): List<RecognizedActivity> {
     val cursor = db?.rawQuery("select * from activities " +
-            "where time >= ? " +
+            "where time > ? " +
             "and time <= ? " +
             "order by time asc", arrayOf("${from.time}", "${to.time}"))
     cursor ?: return emptyList()
@@ -20,6 +20,11 @@ private fun fetchRecognizedActivities(from: Date, to: Date): List<RecognizedActi
     }
     cursor.close()
     return activities
+}
+
+fun deleteOldActivities(to: Date) {
+    db?.execSQL("delete from activities " +
+            "where time <= ${to.time} ")
 }
 
 private val mutex = Mutex(false)
@@ -43,6 +48,7 @@ fun postRecognizedActivities() = runBlocking {
             Log.e("RecognizedActivityMgr", "Failed posting activity: ${result.component2().toString()}")
             return@forEach
         }
+        deleteOldActivities(fetchTime)
         store("lastActivitySync", "${fetchTime.time}")
     }
     mutex.unlock()

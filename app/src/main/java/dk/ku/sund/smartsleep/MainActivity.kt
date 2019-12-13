@@ -1,16 +1,17 @@
 package dk.ku.sund.smartsleep
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
+import android.app.*
 import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity;
 import dk.ku.sund.smartsleep.manager.*
 import dk.ku.sund.smartsleep.service.ActivityRecognitionService
+import dk.ku.sund.smartsleep.service.AlarmReceiver
 import dk.ku.sund.smartsleep.service.NOTIFICATION_CHANNEL_ID
 import dk.ku.sund.smartsleep.service.ScreenService
 
@@ -41,6 +42,19 @@ class MainActivity : AppCompatActivity() {
 
         startService(Intent(this@MainActivity, ScreenService::class.java))
         startService(Intent(this@MainActivity, ActivityRecognitionService::class.java))
+
+        var alarmMgr: AlarmManager? = null
+        lateinit var alarmIntent: PendingIntent
+        alarmMgr = getSystemService(Service.ALARM_SERVICE) as AlarmManager
+        alarmIntent = Intent(this, AlarmReceiver::class.java).let { intent ->
+            PendingIntent.getBroadcast(this, 0, intent, 0)
+        }
+        alarmMgr!!.setExactAndAllowWhileIdle(
+            AlarmManager.ELAPSED_REALTIME_WAKEUP,
+            SystemClock.elapsedRealtime(),
+            alarmIntent
+        )
+
         Log.d("SHeartbeat", "App is opened")
 
         if (!hasJwt) {
