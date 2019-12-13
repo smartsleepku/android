@@ -33,3 +33,7 @@ fun initializeDatabase(context: Context) {
     databaseHandler = DatabaseHandler(context)
     db = databaseHandler?.writableDatabase
 }
+
+fun deinitializeDatabase() {
+    db?.close()
+}
