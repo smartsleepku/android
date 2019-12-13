@@ -23,6 +23,16 @@ class AlarmReceiver : BroadcastReceiver() {
         Log.d("SHeartbeat", "Alarm event")
         var alarmMgr: AlarmManager? = null
         lateinit var alarmIntent: PendingIntent
+        alarmMgr = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
+        alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
+            PendingIntent.getBroadcast(context, 0, intent, 0)
+        }
+        alarmMgr!!.setExactAndAllowWhileIdle(
+            AlarmManager.ELAPSED_REALTIME_WAKEUP,
+            SystemClock.elapsedRealtime()+HEARTBEAT_INTERVAL,
+            alarmIntent
+        )
+
         val manager =
             context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager?
         for (service in manager!!.getRunningServices(Int.MAX_VALUE)) {
@@ -42,16 +52,10 @@ class AlarmReceiver : BroadcastReceiver() {
                 GlobalScope.launch {
                     bulkPostHeartbeat()
                 }
-                alarmMgr = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
-                alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
-                    PendingIntent.getBroadcast(context, 0, intent, 0)
-                }
-                alarmMgr!!.setExactAndAllowWhileIdle(
-                    AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                    SystemClock.elapsedRealtime()+HEARTBEAT_INTERVAL,
-                    alarmIntent
-                )
             }
         }
+
+        context.startService(Intent(context, ScreenService::class.java))
+        context.startService(Intent(context, ActivityRecognitionService::class.java))
     }
 }

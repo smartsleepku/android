@@ -29,8 +29,6 @@ const val HEARTBEAT_INTERVAL = (5 * 60 * 1000).toLong() // 10 minutes
 class ScreenService : Service() {
 
     var receiver: ScreenReceiver? = null
-    private var alarmMgr: AlarmManager? = null
-    private lateinit var alarmIntent: PendingIntent
 
     //val executor: ScheduledExecutorService = Executors.newScheduledThreadPool(2)
 
@@ -67,22 +65,6 @@ class ScreenService : Service() {
 
         //val heartbeatTask = HeartbeatTimerTask("Heartbeat task")
         //executor.scheduleAtFixedRate(heartbeatTask, 0, HEARTBEAT_INTERVAL, TimeUnit.SECONDS)
-
-        alarmMgr = getSystemService(ALARM_SERVICE) as AlarmManager
-        alarmIntent = Intent(this, AlarmReceiver::class.java).let { intent ->
-            PendingIntent.getBroadcast(this, 0, intent, 0)
-        }
-//        alarmMgr!!.setInexactRepeating(
-//            AlarmManager.ELAPSED_REALTIME_WAKEUP,
-//            SystemClock.elapsedRealtime(),
-//            HEARTBEAT_INTERVAL,
-//            alarmIntent
-//        )
-        alarmMgr!!.setExactAndAllowWhileIdle(
-            AlarmManager.ELAPSED_REALTIME_WAKEUP,
-            SystemClock.elapsedRealtime(),
-            alarmIntent
-        )
 
         Log.d("SHeartbeat", "Screen created")
     }
