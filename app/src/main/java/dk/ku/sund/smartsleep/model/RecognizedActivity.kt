@@ -2,7 +2,12 @@ package dk.ku.sund.smartsleep.model
 
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import dk.ku.sund.smartsleep.manager.db
+import android.util.Log
+import dk.ku.sund.smartsleep.manager.acquireDatabase
+import dk.ku.sund.smartsleep.manager.dbMutex
+import dk.ku.sund.smartsleep.manager.releaseDatabase
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.withLock
 import java.util.*
 
 data class RecognizedActivity (
@@ -29,15 +34,23 @@ data class RecognizedActivity (
         time = Date(cursor.getLong(cursor.getColumnIndex("time")))
     }
 
-    fun save() {
-        if (id == null) {
-            val insertStatementString = "insert or replace into activities (\"type\", confidence, \"time\") " +
-                    "values (?, ?, ?)"
-            db?.execSQL(insertStatementString, arrayOf(type, confidence, (time ?: Date()).time))
-        } else {
-            val updateStatementString = "update activities set (\"type\" = ?, confidence = ?, \"time\" = ?) " +
-                    "where id = ?"
-            db?.execSQL(updateStatementString, arrayOf(type, confidence, (time ?: Date()).time, id))
+    fun save() = runBlocking {
+        Log.i("DatabaseMutex", "RecognizedActivity: mutex = $dbMutex")
+        dbMutex.withLock {
+            val db = acquireDatabase()
+            try {
+                if (id == null) {
+                    val insertStatementString = "insert or replace into activities (\"type\", confidence, \"time\") " +
+                            "values (?, ?, ?)"
+                    db?.execSQL(insertStatementString, arrayOf(type, confidence, (time ?: Date()).time))
+                } else {
+                    val updateStatementString = "update activities set (\"type\" = ?, confidence = ?, \"time\" = ?) " +
+                            "where id = ?"
+                    db?.execSQL(updateStatementString, arrayOf(type, confidence, (time ?: Date()).time, id))
+                }
+            } finally {
+                releaseDatabase()
+            }
         }
     }
 }

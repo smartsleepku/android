@@ -25,10 +25,13 @@ class ScreenReceiver() : BroadcastReceiver() {
             Log.w("ScreenReceiver", "unknown screen event")
             return
         }
+        Log.i("ScreenReceiver", "sleep is saved")
         updateLatestRest(sleep = sleep)
+        Log.i("ScreenReceiver", "rest is updated")
 
         GlobalScope.launch {
             bulkPostSleep()
+            Log.i("ScreenReceiver", "sleep is posted")
         }
 
         val i = Intent(context, ScreenService::class.java)

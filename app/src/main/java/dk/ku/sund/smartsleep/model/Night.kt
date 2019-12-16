@@ -2,7 +2,12 @@ package dk.ku.sund.smartsleep.model
 
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import dk.ku.sund.smartsleep.manager.db
+import android.util.Log
+import dk.ku.sund.smartsleep.manager.acquireDatabase
+import dk.ku.sund.smartsleep.manager.dbMutex
+import dk.ku.sund.smartsleep.manager.releaseDatabase
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.withLock
 import java.util.*
 
 data class Night(
@@ -35,7 +40,7 @@ data class Night(
         unrestDuration = cursor.getLong(cursor.getColumnIndex("unrestDuration"))
     }
 
-    fun save() {
+    fun save(db: SQLiteDatabase?) {
         if (id == null) {
             val insertStatementString = "insert or replace into nights (\"from\", \"to\", disruptionCount, " +
                     "longestSleepDuration, unrestDuration) " +
@@ -48,5 +53,4 @@ data class Night(
             db?.execSQL(updateStatementString, arrayOf(from!!.time / 1000, to!!.time / 1000, disruptionCount, longestSleepDuration, unrestDuration, id))
         }
     }
-
 }

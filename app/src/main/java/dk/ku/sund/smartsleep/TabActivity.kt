@@ -2,6 +2,7 @@ package dk.ku.sund.smartsleep
 
 import android.app.Activity
 import android.content.Intent
+import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -63,10 +64,11 @@ class TabActivity : Activity() {
         if (hasConfiguration) {
             GlobalScope.launch {
                 generateNights(object : NightGeneratorUpdateHolder() {
-                    override fun update() {
+                    override fun update(db: SQLiteDatabase?) {
                         val done = this.done
                         val total = this.total
                         val current = this.current
+                        Log.i("DatabaseMutex", "NightManager-UpdateSubroutineTab: before UI thread")
                         runOnUiThread {
                             if (done) {
                                 loading.visibility = View.INVISIBLE
@@ -76,6 +78,7 @@ class TabActivity : Activity() {
                                 loading.progress = current.toInt()
                             }
                         }
+                        Log.i("DatabaseMutex", "NightManager-UpdateSubroutineTab: after UI thread")
                     }
                 })
                 var night = fetchOneNight(Date())

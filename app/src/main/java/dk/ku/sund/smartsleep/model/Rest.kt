@@ -2,7 +2,12 @@ package dk.ku.sund.smartsleep.model
 
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import dk.ku.sund.smartsleep.manager.db
+import android.util.Log
+import dk.ku.sund.smartsleep.manager.acquireDatabase
+import dk.ku.sund.smartsleep.manager.dbMutex
+import dk.ku.sund.smartsleep.manager.releaseDatabase
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.withLock
 import java.util.*
 
 data class Rest(
@@ -29,16 +34,16 @@ data class Rest(
         endTime = Date(cursor.getLong(cursor.getColumnIndex("endTime")) * 1000)
     }
 
-    fun save() {
+    fun save(db: SQLiteDatabase?) {
         if (id == null) {
             val insertStatementString = "insert into rests (resting, startTime, endTime) values (?, ?, ?)"
             var resting = 0
-            if (this.resting!!) resting = 1
+            if (this@Rest.resting!!) resting = 1
             db?.execSQL(insertStatementString, arrayOf(resting, startTime!!.time / 1000, endTime?.time?.div(1000)))
         } else {
             val updateStatementString = "update rests set resting = ?, startTime = ?, endTime = ? where id = ?"
             var resting = 0
-            if (this.resting!!) resting = 1
+            if (this@Rest.resting!!) resting = 1
             db?.execSQL(updateStatementString, arrayOf(resting, startTime!!.time / 1000, endTime?.time?.div(1000), id))
         }
     }

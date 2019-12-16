@@ -14,6 +14,8 @@ import java.util.*
 
 class AlarmReceiver : BroadcastReceiver() {
 
+    private var isInitialized = false
+
     override fun onReceive(context: Context, intent: Intent) {
         val alarmMgr = context.getSystemService(Service.ALARM_SERVICE) as AlarmManager
         val alarmIntent = Intent(context, AlarmReceiver::class.java).let { alIntent ->
@@ -29,14 +31,16 @@ class AlarmReceiver : BroadcastReceiver() {
             context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager?
         for (service in manager!!.getRunningServices(Int.MAX_VALUE)) {
             if (service.service.className == "dk.ku.sund.smartsleep.service.ScreenService") {
-                initializeStore(context)
-                configure()
-                trustKU()
-                initializeDatabase(context)
+                if (!isInitialized) {
+                    initializeStore(context)
+                    configure()
+                    trustKU()
+                    initializeDatabase(context)
+                    isInitialized = true
+                }
                 val heartbeat = Heartbeat(null, Date())
                 heartbeat.save()
                 bulkPostHeartbeat()
-                deinitializeDatabase()
             }
         }
 
