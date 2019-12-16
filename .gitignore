@@ -13,3 +13,4 @@
 .externalNativeBuild
 ./app/src/main/java/dk/ku/sund/smartsleep/manager/ClientSecret.kt
 app/src/main/java/dk/ku/sund/smartsleep/manager/ClientSecret.kt
+app/release
