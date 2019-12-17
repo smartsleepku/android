@@ -13,6 +13,8 @@ import dk.ku.sund.smartsleep.service.AlarmReceiver
 import dk.ku.sund.smartsleep.service.NOTIFICATION_CHANNEL_ID
 import dk.ku.sund.smartsleep.service.ScreenService
 
+var isInitialized = false
+
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,8 +22,13 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
-        initializeStore(applicationContext)
-        initializeDatabase(this)
+        if (!isInitialized) {
+            initializeStore(applicationContext)
+            configure()
+            trustKU()
+            initializeDatabase(this)
+            isInitialized = true
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "SmartSleep-Channel"

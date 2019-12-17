@@ -4,8 +4,8 @@ import android.content.Intent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.util.Log
-import dk.ku.sund.smartsleep.manager.bulkPostSleep
-import dk.ku.sund.smartsleep.manager.updateLatestRest
+import dk.ku.sund.smartsleep.isInitialized
+import dk.ku.sund.smartsleep.manager.*
 import dk.ku.sund.smartsleep.model.Sleep
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -13,6 +13,14 @@ import java.util.*
 
 class ScreenReceiver() : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
+        if (!isInitialized) {
+            initializeStore(context)
+            configure()
+            trustKU()
+            initializeDatabase(context)
+            isInitialized = true
+        }
+
         val sleep: Sleep
         Log.i("ScreenReceiver", "got screen event")
         if (intent.action == Intent.ACTION_SCREEN_OFF) {

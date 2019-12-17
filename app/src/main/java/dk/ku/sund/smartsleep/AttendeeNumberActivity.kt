@@ -12,8 +12,13 @@ class AttendeeNumberActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_attendee_number)
-        configure()
-        trustKU()
+        if (!isInitialized) {
+            initializeStore(applicationContext)
+            configure()
+            trustKU()
+            initializeDatabase(this)
+            isInitialized = true
+        }
 
         errorcard.alpha = 0.0F
 

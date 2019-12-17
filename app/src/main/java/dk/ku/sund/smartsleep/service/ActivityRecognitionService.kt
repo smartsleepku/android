@@ -6,9 +6,8 @@ import android.content.Intent
 import android.os.IBinder
 import com.google.android.gms.location.ActivityRecognitionResult
 import com.google.android.gms.location.DetectedActivity
-import dk.ku.sund.smartsleep.manager.configure
-import dk.ku.sund.smartsleep.manager.postRecognizedActivities
-import dk.ku.sund.smartsleep.manager.trustKU
+import dk.ku.sund.smartsleep.isInitialized
+import dk.ku.sund.smartsleep.manager.*
 import dk.ku.sund.smartsleep.model.RecognizedActivity
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -27,8 +26,13 @@ class ActivityRecognitionService : IntentService("ActivityRecognitionService") {
 
     override fun onCreate() {
         super.onCreate()
-        configure()
-        trustKU()
+        if (!isInitialized) {
+            initializeStore(applicationContext)
+            configure()
+            trustKU()
+            initializeDatabase(this)
+            isInitialized = true
+        }
         recognition = TransitionRecognition()
         recognition?.startTracking(this)
     }

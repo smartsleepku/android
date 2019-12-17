@@ -18,7 +18,13 @@ class ConfigureActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_configure)
 
-        initializeStore(applicationContext)
+        if (!isInitialized) {
+            initializeStore(applicationContext)
+            configure()
+            trustKU()
+            initializeDatabase(this)
+            isInitialized = true
+        }
 
         fab.setOnClickListener {
             val intent = Intent(this, HelpActivity::class.java)

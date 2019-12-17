@@ -5,7 +5,10 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import dk.ku.sund.smartsleep.isInitialized
 import dk.ku.sund.smartsleep.manager.configure
+import dk.ku.sund.smartsleep.manager.initializeDatabase
+import dk.ku.sund.smartsleep.manager.initializeStore
 import dk.ku.sund.smartsleep.manager.trustKU
 
 
@@ -29,8 +32,13 @@ class ScreenService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        configure()
-        trustKU()
+        if (!isInitialized) {
+            initializeStore(applicationContext)
+            configure()
+            trustKU()
+            initializeDatabase(this)
+            isInitialized = true
+        }
 
         val builder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
             .setContentTitle("Smart Sleep")

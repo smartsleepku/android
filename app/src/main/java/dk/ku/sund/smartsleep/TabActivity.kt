@@ -19,9 +19,14 @@ class TabActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tab)
-        configure()
-        trustKU()
-        initializeStore(applicationContext)
+
+        if (!isInitialized) {
+            initializeStore(applicationContext)
+            configure()
+            trustKU()
+            initializeDatabase(this)
+            isInitialized = true
+        }
 
         fab.setOnClickListener {
             val intent = Intent(this, ConfigureActivity::class.java)
