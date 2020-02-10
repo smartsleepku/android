@@ -12,6 +12,7 @@ import dk.ku.sund.smartsleep.service.ActivityRecognitionService
 import dk.ku.sund.smartsleep.service.AlarmReceiver
 import dk.ku.sund.smartsleep.service.NOTIFICATION_CHANNEL_ID
 import dk.ku.sund.smartsleep.service.ScreenService
+import kotlinx.coroutines.runBlocking
 
 var isInitialized = false
 
@@ -27,6 +28,9 @@ class MainActivity : AppCompatActivity() {
             configure()
             trustKU()
             initializeDatabase(this)
+            if (hasJwt) {
+                runBlocking { postDebugInfo() }
+            }
             isInitialized = true
         }
 

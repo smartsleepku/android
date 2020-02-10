@@ -9,3 +9,11 @@ data class Attendee(
     var weekendMorning: Date?,
     var weekendEvening: Date?
 )
+
+data class DebugInfo(
+    var time: Date?,
+    var model: String?,
+    var manufacturer: String?,
+    var systemVersion: String?,
+    var systemName: String?
+)

@@ -6,10 +6,7 @@ import android.content.IntentFilter
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import dk.ku.sund.smartsleep.isInitialized
-import dk.ku.sund.smartsleep.manager.configure
-import dk.ku.sund.smartsleep.manager.initializeDatabase
-import dk.ku.sund.smartsleep.manager.initializeStore
-import dk.ku.sund.smartsleep.manager.trustKU
+import dk.ku.sund.smartsleep.manager.*
 
 
 const val NOTIFICATION_CHANNEL_ID = "cid"

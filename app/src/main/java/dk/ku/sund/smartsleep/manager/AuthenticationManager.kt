@@ -1,5 +1,6 @@
 package dk.ku.sund.smartsleep.manager
 
+import android.os.Build
 import android.util.Base64
 import android.util.Log
 import com.github.kittinunf.fuel.coroutines.awaitObject
@@ -9,10 +10,7 @@ import com.github.kittinunf.fuel.gson.jsonBody
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.fuel.httpPut
-import dk.ku.sund.smartsleep.model.Attendee
-import dk.ku.sund.smartsleep.model.AuthLoginBody
-import dk.ku.sund.smartsleep.model.AuthLoginResponseToken
-import dk.ku.sund.smartsleep.model.Token
+import dk.ku.sund.smartsleep.model.*
 import kotlinx.coroutines.runBlocking
 import java.util.*
 
@@ -48,6 +46,23 @@ suspend fun postCredentials() {
     } catch (e: Exception) {
         Log.e("AuthenticationManager", e.stackTrace.joinToString("\n"))
     }
+}
+
+suspend fun postDebugInfo() {
+    val debugInfo = DebugInfo(
+        Date(),
+        Build.MODEL,
+        Build.MANUFACTURER,
+        Build.VERSION.RELEASE,
+        "android"
+    )
+    "/debug".httpPost()
+        .header(mapOf(
+            "Content-Type" to "application/json",
+            "Authorization" to "Bearer ${jwt}"
+        ))
+        .body(gson.toJson(debugInfo))
+        .awaitStringResponse()
 }
 
 suspend fun postAttendee() {
